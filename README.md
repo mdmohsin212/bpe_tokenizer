@@ -89,9 +89,9 @@ These tokens are used internally to handle unknown tokens or sequence markers.
 
 | Token | ID | Description |
 | --- | --- | --- |
-| `<UNK>` | 256 | Unknown Token |
-| `<BOS>` | 257 | Beginning of Sequence |
-| `<EOS>` | 258 | End of Sequence |
+| `<BOS>` | 256 | Beginning of Sequence |
+| `<EOS>` | 257 | End of Sequence |
+| `<UNK>` | 258 | Unknown Token |
 
 ## Contributing
 
