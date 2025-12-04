@@ -30,7 +30,7 @@ You can install directly from PyPI :
 
 ### Import and Initialize
 
-    from bpe_tokenizer import Tokenizer
+    from bp_tokenizer import Tokenizer
     
     # Initialize tokenizer
     tokenizer = Tokenizer()
