@@ -2,9 +2,9 @@ import json
 import re
 
 SPECIAL_TOKENS = {
-    "<UNK>": 256,
-    "<BOS>": 257,
-    "<EOS>": 258
+    "<BOS>": 256,
+    "<EOS>": 257,
+    "<UNK>": 258,
 }
 
 class Tokenizer:
@@ -13,11 +13,13 @@ class Tokenizer:
             self.__merges = json.load(f)
             
         self.__vocab = {i: bytes([i]) for i in range(256)}
+        self.__special_tokens = SPECIAL_TOKENS.copy()
         for key, idx in self.__merges.items():
             p0, p1 = map(int, key.split(','))
             self.__vocab[idx] = self.__vocab[p0] + self.__vocab[p1]
         
-        self.__special_tokens = SPECIAL_TOKENS.copy()
+        for token_str, _id in self.__special_tokens.items():
+            self.__vocab[_id] = token_str.encode("utf-8")
         
         self.__get_id_to_token = {idx: token.decode('utf-8', errors='replace') if isinstance(token, bytes) else token for idx, token in self.__vocab.items()}
         self.__get_token_to_id = {v: k for k, v in self.__get_id_to_token.items()}
@@ -46,7 +48,7 @@ class Tokenizer:
     def id_to_token(self, idx):
         return self.__get_id_to_token.get(idx, "<UNK>")
     
-    def encode(self, text):
+    def encode(self, text, add_special_tokens=False):
         ids = list(text.encode("utf-8"))
         while len(ids) >= 2:
             stats = self.__compute_pair_stats(ids)
@@ -56,12 +58,19 @@ class Tokenizer:
                 break
             idx = self.__merges[pair_key(pair)]
             ids = self.__merge_ids(ids, pair, idx)
+        
+        if add_special_tokens: 
+            return [self.__special_tokens["<BOS>"]] + ids + [self.__special_tokens["<EOS>"]]
         return ids
     
-    def encode_batch(self, texts):
-        return [self.encode(text) for text in texts]
+    def encode_batch(self, texts, add_special_tokens=False):
+        return [self.encode(text, add_special_tokens) for text in texts]
     
-    def decode(self, ids):
+    def decode(self, ids, skip_special_tokens=True):
+        if skip_special_tokens:
+            special_ids = set(self.__special_tokens.values())
+            ids = [i for i in ids if i not in special_ids]
+            
         tokens = b"".join(self.__vocab[idx] for idx in ids)
         return tokens.decode("utf-8", errors="replace")
     
