@@ -95,7 +95,7 @@ These tokens are used internally to handle unknown tokens or sequence markers.
 
 ## Contributing
 
-If you want to improve `bpe_tokenizer`:
+If you want to improve `bp_tokenizer`:
 
 1.  **Fork** the repository.
     
